@@ -1,0 +1,172 @@
+# ASP.NET
+# Build and test ASP.NET projects.
+# Add steps that publish symbols, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+
+trigger:
+  branches:
+    include:
+      - "*"
+
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+- task: NuGetToolInstaller@1
+
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
+
+- task: PowerShell@2
+  displayName: Set the Build.BuildNumber
+  inputs:
+    targetType: 'inline'
+    script: |
+      [string] $buildName = "2023_v1"
+      Write-Host "##vso[build.updatebuildnumber]$buildName"
+
+
+- task: VSBuild@1
+  displayName: 'Build solution'
+  inputs:
+    solution: '$(solution)'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.SourcesDirectory)\\"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+ #WcfProject1
+- task: CopyFiles@2
+  displayName: 'Copy WcfProject1.zip'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: 'WcfProject1.zip'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\WcfProject1'
+    CleanTargetFolder: true
+    OverWrite: true
+
+- task: ExtractFiles@1
+  displayName: 'Extract WcfProject1.zip'
+  inputs:
+    archiveFilePatterns: '$(Build.ArtifactStagingDirectory)\WcfProject1\WcfProject1.zip'
+    destinationFolder: '$(Build.ArtifactStagingDirectory)\WcfProject1\temp'
+
+- task: CopyFiles@2
+  displayName: 'Copy unzipped required files WcfProject1'
+  inputs:
+    SourceFolder: $(Build.ArtifactStagingDirectory)\WcfProject1\temp\Content\D_C\a\1\s\WcfProject1\obj\Release\Package\PackageTmp
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\WcfProject1\final'
+
+- task: ArchiveFiles@2
+  displayName: 'archive only required files WcfProject1'
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/WcfProject1/final'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/WcfProject1/WcfProject1_$(Build.BuildNumber).zip'
+    replaceExistingArchive: true
+- task: PublishBuildArtifacts@1
+  displayName: 'publish WcfProject1'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/WcfProject1/WcfProject1_$(Build.BuildNumber).zip'
+    ArtifactName: 'WcfProject1'
+    publishLocation: 'Container'
+
+ #WcfProject2
+- task: CopyFiles@2
+  displayName: 'Copy WcfProject2.zip'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: 'WcfProject2.zip'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\WcfProject2'
+    CleanTargetFolder: true
+    OverWrite: true
+
+- task: ExtractFiles@1
+  displayName: 'Extract WcfProject2.zip'
+  inputs:
+    archiveFilePatterns: '$(Build.ArtifactStagingDirectory)\WcfProject2\WcfProject2.zip'
+    destinationFolder: '$(Build.ArtifactStagingDirectory)\WcfProject2\temp'
+
+- task: CopyFiles@2
+  displayName: 'Copy unzipped required files WcfProject2'
+  inputs:
+    SourceFolder: $(Build.ArtifactStagingDirectory)\WcfProject2\temp\Content\D_C\a\1\s\WcfProject2\obj\Release\Package\PackageTmp
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\WcfProject2\final'
+
+- task: ArchiveFiles@2
+  displayName: 'archive only required files WcfProject2'
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/WcfProject2/final'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/WcfProject2/WcfProject2_$(Build.BuildNumber).zip'
+    replaceExistingArchive: true
+- task: PublishBuildArtifacts@1
+  displayName: 'publish WcfProject2'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/WcfProject2/WcfProject2_$(Build.BuildNumber).zip'
+    ArtifactName: 'WcfProject2'
+    publishLocation: 'Container'
+
+ #WcfProject3
+- task: CopyFiles@2
+  displayName: 'Copy WcfProject3.zip'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: 'WcfProject3.zip'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\WcfProject3'
+    CleanTargetFolder: true
+    OverWrite: true
+
+- task: ExtractFiles@1
+  displayName: 'Extract WcfProject3.zip'
+  inputs:
+    archiveFilePatterns: '$(Build.ArtifactStagingDirectory)\WcfProject3\WcfProject3.zip'
+    destinationFolder: '$(Build.ArtifactStagingDirectory)\WcfProject3\temp'
+
+- task: CopyFiles@2
+  displayName: 'Copy unzipped required files WcfProject3'
+  inputs:
+    SourceFolder: $(Build.ArtifactStagingDirectory)\WcfProject3\temp\Content\D_C\a\1\s\WcfProject3\obj\Release\Package\PackageTmp
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\WcfProject3\final'
+
+- task: ArchiveFiles@2
+  displayName: 'archive only required files WcfProject3'
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/WcfProject3/final'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/WcfProject3/WcfProject3_$(Build.BuildNumber).zip'
+    replaceExistingArchive: true
+- task: PublishBuildArtifacts@1
+  displayName: 'publish WcfProject3'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/WcfProject3/WcfProject3_$(Build.BuildNumber).zip'
+    ArtifactName: 'WcfProject3'
+    publishLocation: 'Container'
+
+
+- task: PowerShell@2
+  displayName: 'List files in $(build.artifactStagingDirectory)'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $artifactDirectory = "$(build.artifactStagingDirectory)"
+      $files = Get-ChildItem -Path $artifactDirectory -recurse
+      Write-Host "Files in $($artifactDirectory):"
+      foreach ($file in $files) {
+        Write-Host $file.FullName
+      }
+
+
+
